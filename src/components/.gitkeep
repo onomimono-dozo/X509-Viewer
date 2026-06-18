@@ -1,0 +1,8 @@
+# src/components — UIコンポーネント（実装フェーズで追加）
+#
+# 予定:
+#   CertificateInput/  … PEM貼り付け・ファイルアップロードのタブUI（Phase1）
+#   CertificateCard/   … 押印付き証明書カード（Phase2）
+#   ChainView/         … チェーン一覧＋選択連動（Phase2）
+#   DetailView/        … 詳細表示（基本→用途→技術仕様→信頼の連鎖）
+#   DiagnosticsPanel/  … 異常検出アラート（Phase3）
