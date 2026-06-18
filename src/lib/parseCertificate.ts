@@ -1,14 +1,18 @@
 import forge from 'node-forge';
 import type {
+  AiaEntry,
   CertExtension,
   DistinguishedName,
   DnAttribute,
   ExtensionKind,
+  NamedOid,
   ParsedCertificate,
   PublicKeyInfo,
   SanEntry,
 } from '../types/certificate';
 import {
+  aiaMethodName,
+  certificatePolicyName,
   dnShortName,
   ecCurveName,
   extKeyUsageName,
@@ -342,6 +346,29 @@ function collectCrlUrls(node: Asn1): string[] {
   return urls;
 }
 
+/** Authority Information Access: SEQUENCE OF { accessMethod OID, accessLocation [6] URI } */
+function parseAia(content: Asn1): AiaEntry[] {
+  const entries: AiaEntry[] = [];
+  for (const desc of kids(content)) {
+    const parts = kids(desc);
+    const method = aiaMethodName(asn1.derToOid(bytes(parts[0])));
+    const loc = parts[1];
+    // accessLocation は通常 [6] URI
+    if (loc && loc.tagClass === CONTEXT && loc.type === 6) {
+      entries.push({ method, url: bytes(loc) });
+    }
+  }
+  return entries;
+}
+
+/** Certificate Policies: SEQUENCE OF PolicyInformation { policyIdentifier OID, ... } */
+function parsePolicies(content: Asn1): NamedOid[] {
+  return kids(content).map((info) => {
+    const oid = asn1.derToOid(bytes(kids(info)[0]));
+    return { oid, name: certificatePolicyName(oid) };
+  });
+}
+
 const EXTENSION_KIND: Record<string, ExtensionKind> = {
   '2.5.29.17': 'subjectAltName',
   '2.5.29.15': 'keyUsage',
@@ -350,6 +377,9 @@ const EXTENSION_KIND: Record<string, ExtensionKind> = {
   '2.5.29.14': 'subjectKeyIdentifier',
   '2.5.29.35': 'authorityKeyIdentifier',
   '2.5.29.31': 'crlDistributionPoints',
+  '1.3.6.1.5.5.7.1.1': 'authorityInfoAccess',
+  '2.5.29.32': 'certificatePolicies',
+  '1.3.6.1.4.1.11129.2.4.2': 'sct',
 };
 
 function parseExtension(extSeq: Asn1): CertExtension {
@@ -402,6 +432,16 @@ function parseExtension(extSeq: Asn1): CertExtension {
       break;
     case 'crlDistributionPoints':
       base.crlUrls = collectCrlUrls(content);
+      break;
+    case 'authorityInfoAccess':
+      base.aiaEntries = parseAia(content);
+      break;
+    case 'certificatePolicies':
+      base.policies = parsePolicies(content);
+      break;
+    case 'sct':
+      // SCTリストはTLSエンコードのため詳細解析はせず、存在の検出に留める
+      base.sctCount = 1;
       break;
   }
   return base;

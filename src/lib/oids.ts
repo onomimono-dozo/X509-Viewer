@@ -60,6 +60,29 @@ export const EXTENSION_NAMES: Record<string, string> = {
   '1.3.6.1.4.1.11129.2.4.2': 'Signed Certificate Timestamps (SCT)',
 };
 
+/** AIA アクセスメソッド OID → 名称 */
+export const AIA_METHODS: Record<string, string> = {
+  '1.3.6.1.5.5.7.48.1': 'OCSP',
+  '1.3.6.1.5.5.7.48.2': 'CA Issuers',
+};
+
+/** 証明書ポリシー OID → 名称（CA/Browser Forum 標準ポリシー等） */
+export const CERTIFICATE_POLICIES: Record<string, string> = {
+  '2.23.140.1.1': 'EV（拡張検証）',
+  '2.23.140.1.2.1': 'DV（ドメイン認証）',
+  '2.23.140.1.2.2': 'OV（組織認証）',
+  '2.23.140.1.2.3': 'IV（個人認証）',
+  '2.5.29.32.0': 'anyPolicy（任意）',
+};
+
+export function aiaMethodName(oid: string): string {
+  return AIA_METHODS[oid] ?? oid;
+}
+
+export function certificatePolicyName(oid: string): string {
+  return CERTIFICATE_POLICIES[oid] ?? oid;
+}
+
 /** DN 属性 OID → 短縮名 */
 export const DN_ATTRIBUTES: Record<string, string> = {
   '2.5.4.3': 'CN',

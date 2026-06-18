@@ -92,6 +92,26 @@ export const FIELD: Record<string, FieldMeta> = {
     icon: '📋',
   },
 
+  // 発行・運用情報（Phase3 追加）
+  authorityInfoAccess: {
+    ja: '機関情報アクセス',
+    en: 'Authority Information Access (AIA)',
+    note: '失効確認(OCSP)や発行者証明書の入手先URL。',
+    icon: '📡',
+  },
+  certificatePolicies: {
+    ja: '証明書ポリシー',
+    en: 'Certificate Policies',
+    note: 'どの審査基準で発行されたか（DV/OV/EV）。',
+    icon: '📜',
+  },
+  sct: {
+    ja: '証明書透明性ログ',
+    en: 'Signed Certificate Timestamps (SCT)',
+    note: '公開ログ(CT)に登録された証跡。改ざん検知に役立つ。',
+    icon: '📰',
+  },
+
   // 署名領域
   signatureAlgorithm: {
     ja: '押印アルゴリズム',

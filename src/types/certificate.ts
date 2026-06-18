@@ -50,6 +50,9 @@ export type ExtensionKind =
   | 'subjectKeyIdentifier'
   | 'authorityKeyIdentifier'
   | 'crlDistributionPoints'
+  | 'authorityInfoAccess'
+  | 'certificatePolicies'
+  | 'sct'
   | 'unsupported';
 
 /** SAN の1エントリ */
@@ -63,6 +66,13 @@ export interface SanEntry {
 export interface NamedOid {
   oid: string;
   name: string;
+}
+
+/** 機関情報アクセス(AIA)の1エントリ */
+export interface AiaEntry {
+  /** 'OCSP' / 'CA Issuers' / その他 */
+  method: string;
+  url: string;
 }
 
 /** X.509 v3 拡張 */
@@ -84,6 +94,10 @@ export interface CertExtension {
   basicConstraints?: { ca: boolean; pathLen?: number };
   keyIdentifier?: string;
   crlUrls?: string[];
+  aiaEntries?: AiaEntry[];
+  policies?: NamedOid[];
+  /** SCT（証明書透明性ログ）のエントリ数。0以上なら拡張あり */
+  sctCount?: number;
   /** 未対応拡張の生値（16進） */
   rawHex?: string;
 }

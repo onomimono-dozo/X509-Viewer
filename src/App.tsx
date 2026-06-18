@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CertificateInput } from './components/CertificateInput/CertificateInput';
 import { CertificateDetail } from './components/CertificateDetail/CertificateDetail';
 import { ChainView } from './components/ChainView/ChainView';
+import { DiagnosticsPanel } from './components/DiagnosticsPanel/DiagnosticsPanel';
 import { buildChain, sealText, type ChainNode } from './lib/chain';
+import { runDiagnostics } from './lib/diagnostics';
 import {
   CertificateParseError,
   parseCertificates,
@@ -16,6 +18,7 @@ function App() {
     Map<number, NodeVerification>
   >(new Map());
   const [error, setError] = useState<string | undefined>();
+  const [targetDomain, setTargetDomain] = useState('');
 
   // チェーンが変わったら署名検証を非同期で実行する
   useEffect(() => {
@@ -51,6 +54,14 @@ function App() {
 
   const selected = chain?.[selectedIndex];
 
+  const diagnostics = useMemo(
+    () =>
+      selected
+        ? runDiagnostics(selected.cert, selected.role, { targetDomain })
+        : [],
+    [selected, targetDomain],
+  );
+
   return (
     <div className="app-shell">
       <header className="app-header">
@@ -67,6 +78,15 @@ function App() {
             selectedIndex={selectedIndex}
             verifications={verifications}
             onSelect={setSelectedIndex}
+          />
+        )}
+
+        {selected && (
+          <DiagnosticsPanel
+            diagnostics={diagnostics}
+            targetDomain={targetDomain}
+            onTargetDomainChange={setTargetDomain}
+            showDomainInput={selected.role === 'leaf'}
           />
         )}
 

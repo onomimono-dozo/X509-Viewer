@@ -126,6 +126,9 @@ export function CertificateDetail({
   const skid = ext('subjectKeyIdentifier');
   const akid = ext('authorityKeyIdentifier');
   const crl = ext('crlDistributionPoints');
+  const aia = ext('authorityInfoAccess');
+  const policies = ext('certificatePolicies');
+  const sct = ext('sct');
   const others = cert.extensions.filter((e) => e.kind === 'unsupported');
 
   const sigBytes = cert.signatureValue.split(':').length;
@@ -281,6 +284,40 @@ export function CertificateDetail({
         </FieldRow>
       </Section>
 
+      <Section title="発行・運用情報（OCSP・ポリシー・透明性ログ）">
+        <FieldRow
+          meta={FIELD.authorityInfoAccess}
+          present={!!aia?.aiaEntries?.length}
+          critical={aia?.critical}
+        >
+          <ul className="value-list">
+            {aia?.aiaEntries?.map((e, i) => (
+              <li key={i} className="value-chip">
+                <span className="value-chip__type">{e.method}</span>
+                <span className="mono">{e.url}</span>
+              </li>
+            ))}
+          </ul>
+        </FieldRow>
+        <FieldRow
+          meta={FIELD.certificatePolicies}
+          present={!!policies?.policies?.length}
+          critical={policies?.critical}
+        >
+          <ul className="value-list">
+            {policies?.policies?.map((p, i) => (
+              <li key={i}>
+                {p.name}
+                <code className="orig-tag">{p.oid}</code>
+              </li>
+            ))}
+          </ul>
+        </FieldRow>
+        <FieldRow meta={FIELD.sct} present={!!sct} critical={sct?.critical}>
+          {sct && '公開ログ(CT)への登録証跡(SCT)が含まれています。'}
+        </FieldRow>
+      </Section>
+
       <Section title="技術仕様・押印">
         <FieldRow meta={FIELD.publicKey}>
           {cert.publicKey.summary}
@@ -301,7 +338,7 @@ export function CertificateDetail({
       {others.length > 0 && (
         <Section title="その他の拡張">
           <p className="inline-note">
-            以下の拡張は検出されましたが、値の詳細表示は次フェーズ(Phase3)で対応します。
+            以下の拡張が検出されました（個別の整形表示には未対応のため、原語名とOIDのみ示します）。
           </p>
           <ul className="value-list">
             {others.map((e, i) => (
