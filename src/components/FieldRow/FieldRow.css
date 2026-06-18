@@ -1,0 +1,105 @@
+.field-row {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0.75rem;
+  padding: 0.85rem 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.field-row:first-child {
+  border-top: none;
+}
+
+.field-row__icon {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.field-row__label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.field-row__ja {
+  font-weight: 600;
+}
+
+.field-row__en {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.field-row__critical {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: #dc2626;
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+}
+
+.field-row__value {
+  margin-top: 0.3rem;
+  word-break: break-word;
+}
+
+.field-row__note {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.field-row__absent {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.field-row--absent .field-row__value {
+  opacity: 0.85;
+}
+
+/* 値の中で使う共通スタイル */
+.mono {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  word-break: break-all;
+}
+
+.orig-tag {
+  display: inline-block;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.05rem 0.35rem;
+  margin-left: 0.4rem;
+}
+
+.value-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.value-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.value-chip__type {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  min-width: 3rem;
+}

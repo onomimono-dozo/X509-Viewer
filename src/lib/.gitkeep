@@ -1,6 +1,0 @@
-# src/lib — 証明書解析ロジック（実装フェーズで追加）
-#
-# 予定:
-#   parseCertificate.ts  … PEM/DER入力をX.509構造へ解析（node-forge）
-#   chain.ts             … AKID/SKIDによるチェーン親子判定（Phase2）
-#   diagnostics.ts       … 異常検出ルール（Phase3）

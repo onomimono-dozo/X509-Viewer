@@ -1,10 +1,31 @@
-/**
- * アプリケーションシェル（環境構築フェーズのプレースホルダ）。
- *
- * 工程③「環境構築」の動作確認用。実装フェーズ1（MVP）以降で、
- * ここに入力エリア・チェーン一覧・詳細表示を段階的に組み込んでいく。
- */
+import { useState } from 'react';
+import { CertificateInput } from './components/CertificateInput/CertificateInput';
+import { CertificateDetail } from './components/CertificateDetail/CertificateDetail';
+import {
+  CertificateParseError,
+  parseCertificates,
+} from './lib/parseCertificate';
+import type { ParsedCertificate } from './types/certificate';
+
 function App() {
+  const [certs, setCerts] = useState<ParsedCertificate[] | null>(null);
+  const [error, setError] = useState<string | undefined>();
+
+  const handleParse = (raw: string) => {
+    try {
+      const parsed = parseCertificates(raw);
+      setCerts(parsed);
+      setError(undefined);
+    } catch (e) {
+      setCerts(null);
+      setError(
+        e instanceof CertificateParseError
+          ? e.message
+          : '予期しないエラーが発生しました。入力内容を確認してください。',
+      );
+    }
+  };
+
   return (
     <div className="app-shell">
       <header className="app-header">
@@ -13,27 +34,23 @@ function App() {
       </header>
 
       <main className="app-main">
-        <section className="setup-card" aria-labelledby="setup-heading">
-          <h2 id="setup-heading">環境構築が完了しました</h2>
-          <p>
-            React + TypeScript + Vite による開発環境が起動しています。
-            証明書解析には node-forge を使用します。
+        <CertificateInput onParse={handleParse} errorMessage={error} />
+
+        {certs && certs.length > 1 && (
+          <p className="app-multi-note">
+            複数の証明書（{certs.length}枚）が見つかりました。チェーン表示は次フェーズ
+            (Phase2) で対応します。現在は先頭の証明書を表示しています。
           </p>
-          <p className="setup-note">
-            次工程：実装フェーズ1（MVP）— PEM/ファイル入力と単一証明書の
-            日本語＋原語併記表示。
+        )}
+
+        {certs && certs.length > 0 && <CertificateDetail cert={certs[0]} />}
+
+        {!certs && !error && (
+          <p className="app-hint">
+            PEMテキストを貼り付けるか、証明書ファイルをアップロードすると、
+            内容を日本語＋原語で表示します。証明書データはブラウザの外へ送信されません。
           </p>
-          <dl className="setup-meta">
-            <div>
-              <dt>バージョン</dt>
-              <dd>0.1.0</dd>
-            </div>
-            <div>
-              <dt>実行モード</dt>
-              <dd>完全クライアントサイド（証明書を外部へ送信しない）</dd>
-            </div>
-          </dl>
-        </section>
+        )}
       </main>
 
       <footer className="app-footer">

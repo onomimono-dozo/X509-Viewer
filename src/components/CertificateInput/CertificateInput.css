@@ -1,0 +1,107 @@
+.cert-input {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.cert-input__tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cert-input__tab {
+  flex: 1;
+  padding: 0.85rem 1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.cert-input__tab.is-active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+  font-weight: 600;
+}
+
+.cert-input__panel {
+  padding: 1.25rem;
+}
+
+.cert-input__textarea {
+  width: 100%;
+  resize: vertical;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  box-sizing: border-box;
+}
+
+.cert-input__submit {
+  margin-top: 0.85rem;
+  padding: 0.6rem 1.4rem;
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cert-input__submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cert-input__drop {
+  border: 2px dashed var(--color-border);
+  border-radius: 10px;
+  padding: 2rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.cert-input__drop.is-over {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+}
+
+.cert-input__drop-main {
+  margin: 0;
+  font-weight: 600;
+}
+
+.cert-input__drop-sub {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.cert-input__filename {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-accent);
+}
+
+.cert-input__file {
+  display: none;
+}
+
+.cert-input__error {
+  margin: 0;
+  padding: 0.85rem 1.25rem;
+  background: color-mix(in srgb, #dc2626 12%, transparent);
+  color: #b91c1c;
+  font-size: 0.9rem;
+  border-top: 1px solid var(--color-border);
+}

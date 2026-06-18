@@ -73,43 +73,29 @@ body {
 
 .app-main {
   flex: 1;
-}
-
-.setup-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 1.5rem;
-}
-
-.setup-card h2 {
-  margin-top: 0;
-}
-
-.setup-note {
-  color: var(--color-accent);
-}
-
-.setup-meta {
-  display: grid;
-  gap: 0.5rem;
-  margin: 1rem 0 0;
-}
-
-.setup-meta div {
   display: flex;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.setup-meta dt {
-  flex: 0 0 8rem;
+.app-hint,
+.app-multi-note {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+}
+
+.app-hint {
   color: var(--color-text-muted);
-  margin: 0;
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
 }
 
-.setup-meta dd {
-  margin: 0;
+.app-multi-note {
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
 }
 
 .app-footer {
