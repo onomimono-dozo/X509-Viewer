@@ -107,6 +107,16 @@ export interface ParsedCertificate {
   fingerprintSha256: string;
   /** 自己署名か（Subject と Issuer が一致） */
   isSelfSigned: boolean;
+
+  /**
+   * 署名検証用の生バイト（バイナリ文字列、1文字=1バイト）。表示には使わない。
+   * rawTbs: 署名対象の tbsCertificate そのもの（原本のDERを切り出したもの）
+   * rawSignature: 署名値（BIT STRING の未使用ビット数オクテットを除いた中身）
+   * rawSpki: この証明書の公開鍵情報(SubjectPublicKeyInfo)のDER
+   */
+  rawTbs: string;
+  rawSignature: string;
+  rawSpki: string;
 }
 
 /** 解析結果（複数証明書に対応。Phase1 は先頭を表示） */

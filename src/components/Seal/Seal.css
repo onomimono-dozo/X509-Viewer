@@ -1,0 +1,53 @@
+.seal {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--color-seal);
+  border: 2px dashed var(--color-seal);
+  background: color-mix(in srgb, var(--color-seal) 7%, transparent);
+  flex-shrink: 0;
+  text-align: center;
+  line-height: 1.1;
+  transform: rotate(-8deg);
+  font-weight: 700;
+}
+
+/* 検証が取れた押印は実線＋濃い印影で「確かに押された」感を出す */
+.seal.is-verified {
+  border-style: solid;
+  background: color-mix(in srgb, var(--color-seal) 14%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-seal) 25%, transparent) inset;
+}
+
+.seal--sm {
+  width: 64px;
+  height: 64px;
+  font-size: 0.62rem;
+  padding: 0.3rem;
+}
+
+.seal--lg {
+  width: 120px;
+  height: 120px;
+  font-size: 0.95rem;
+  padding: 0.5rem;
+}
+
+.seal__inner {
+  word-break: break-all;
+}
+
+.seal__mark {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  font-size: 0.55em;
+  opacity: 0.7;
+}
+
+.seal--lg .seal__mark {
+  bottom: 12px;
+  right: 16px;
+}

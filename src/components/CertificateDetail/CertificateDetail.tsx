@@ -5,11 +5,20 @@ import type {
   ParsedCertificate,
 } from '../../types/certificate';
 import { FIELD } from '../../data/fieldDictionary';
+import type { NodeVerification } from '../../lib/verifyChain';
 import { FieldRow } from '../FieldRow/FieldRow';
+import { Seal } from '../Seal/Seal';
+import { VerificationBadge } from '../VerificationBadge/VerificationBadge';
 import './CertificateDetail.css';
 
 interface CertificateDetailProps {
   cert: ParsedCertificate;
+  /** 朱印に記す発行者名（チェーン表示時に渡す） */
+  sealText?: string;
+  /** 押印者の説明（例: 「Example Root CA が押印」） */
+  sealedByLabel?: string;
+  /** 署名検証の結果 */
+  verification?: NodeVerification;
 }
 
 const DN_LABELS: Record<string, string> = {
@@ -101,7 +110,12 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-export function CertificateDetail({ cert }: CertificateDetailProps) {
+export function CertificateDetail({
+  cert,
+  sealText,
+  sealedByLabel,
+  verification,
+}: CertificateDetailProps) {
   const ext = (kind: CertExtension['kind']) =>
     cert.extensions.find((e) => e.kind === kind);
 
@@ -131,6 +145,33 @@ export function CertificateDetail({ cert }: CertificateDetailProps) {
           </span>
         )}
       </header>
+
+      {sealedByLabel && (
+        <section className="seal-section">
+          <Seal
+            text={sealText ?? (cert.isSelfSigned ? '自己署名' : '発行者')}
+            verified={verification?.status === 'verified'}
+            size="lg"
+          />
+          <div className="seal-section__body">
+            <div className="seal-section__head">
+              <span className="seal-section__label">この証明書への押印（署名）</span>
+              <VerificationBadge status={verification?.status} />
+            </div>
+            <p className="seal-section__by">{sealedByLabel}</p>
+            <p className="seal-section__desc">
+              押印の実体は「証明書の中身(tbsCertificate)のハッシュを、発行者の秘密鍵で
+              署名した値」です。値は下部「技術仕様・押印」の{' '}
+              <code className="orig-tag">Signature Value</code> に示します。検証には{' '}
+              <code className="orig-tag">Authority Key Identifier</code>{' '}
+              が指す発行者の公開鍵を用います。
+            </p>
+            {verification && (
+              <p className="seal-section__detail">{verification.detail}</p>
+            )}
+          </div>
+        </section>
+      )}
 
       <Section title="基本情報">
         <FieldRow meta={FIELD.subject}>

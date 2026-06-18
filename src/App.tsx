@@ -1,23 +1,46 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CertificateInput } from './components/CertificateInput/CertificateInput';
 import { CertificateDetail } from './components/CertificateDetail/CertificateDetail';
+import { ChainView } from './components/ChainView/ChainView';
+import { buildChain, sealText, type ChainNode } from './lib/chain';
 import {
   CertificateParseError,
   parseCertificates,
 } from './lib/parseCertificate';
-import type { ParsedCertificate } from './types/certificate';
+import { verifyChain, type NodeVerification } from './lib/verifyChain';
 
 function App() {
-  const [certs, setCerts] = useState<ParsedCertificate[] | null>(null);
+  const [chain, setChain] = useState<ChainNode[] | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [verifications, setVerifications] = useState<
+    Map<number, NodeVerification>
+  >(new Map());
   const [error, setError] = useState<string | undefined>();
+
+  // チェーンが変わったら署名検証を非同期で実行する
+  useEffect(() => {
+    if (!chain) return;
+    let active = true;
+    verifyChain(chain).then((result) => {
+      if (active) setVerifications(result);
+    });
+    return () => {
+      active = false;
+    };
+  }, [chain]);
 
   const handleParse = (raw: string) => {
     try {
-      const parsed = parseCertificates(raw);
-      setCerts(parsed);
+      const certs = parseCertificates(raw);
+      const nodes = buildChain(certs);
+      setChain(nodes);
+      setVerifications(new Map());
+      // 初期選択は取り込みの起点となったサーバ証明書（入力の先頭）
+      const startPos = nodes.findIndex((n) => n.inputIndex === 0);
+      setSelectedIndex(startPos >= 0 ? startPos : 0);
       setError(undefined);
     } catch (e) {
-      setCerts(null);
+      setChain(null);
       setError(
         e instanceof CertificateParseError
           ? e.message
@@ -25,6 +48,8 @@ function App() {
       );
     }
   };
+
+  const selected = chain?.[selectedIndex];
 
   return (
     <div className="app-shell">
@@ -36,19 +61,29 @@ function App() {
       <main className="app-main">
         <CertificateInput onParse={handleParse} errorMessage={error} />
 
-        {certs && certs.length > 1 && (
-          <p className="app-multi-note">
-            複数の証明書（{certs.length}枚）が見つかりました。チェーン表示は次フェーズ
-            (Phase2) で対応します。現在は先頭の証明書を表示しています。
-          </p>
+        {chain && chain.length > 0 && (
+          <ChainView
+            nodes={chain}
+            selectedIndex={selectedIndex}
+            verifications={verifications}
+            onSelect={setSelectedIndex}
+          />
         )}
 
-        {certs && certs.length > 0 && <CertificateDetail cert={certs[0]} />}
+        {selected && (
+          <CertificateDetail
+            cert={selected.cert}
+            sealText={sealText(selected)}
+            sealedByLabel={selected.sealedByLabel}
+            verification={verifications.get(selectedIndex)}
+          />
+        )}
 
-        {!certs && !error && (
+        {!chain && !error && (
           <p className="app-hint">
             PEMテキストを貼り付けるか、証明書ファイルをアップロードすると、
-            内容を日本語＋原語で表示します。証明書データはブラウザの外へ送信されません。
+            内容を日本語＋原語で表示します。証明書チェーン（複数証明書）を入力すると、
+            信頼の連鎖を押印付きで可視化します。証明書データはブラウザの外へ送信されません。
           </p>
         )}
       </main>

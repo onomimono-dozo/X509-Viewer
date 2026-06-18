@@ -76,6 +76,31 @@ function integerToNumber(intBytes: string): number {
   return hex ? parseInt(hex, 16) : 0;
 }
 
+/** DER の長さフィールドを読む（pos は長さの先頭バイト位置） */
+function readDerLength(der: string, pos: number): { len: number; headerLen: number } {
+  const b = der.charCodeAt(pos);
+  if (b < 0x80) return { len: b, headerLen: 1 };
+  const numBytes = b & 0x7f;
+  let len = 0;
+  for (let i = 0; i < numBytes; i++) {
+    len = len * 256 + der.charCodeAt(pos + 1 + i);
+  }
+  return { len, headerLen: 1 + numBytes };
+}
+
+/**
+ * 証明書DER(外側SEQUENCE)から、先頭の子要素 tbsCertificate の TLV を
+ * バイト単位でそのまま切り出す。署名検証は原本バイトに対して行う必要があるため、
+ * forge での再エンコードではなく原本から切り出す。
+ */
+function extractTbsDer(certDer: string): string {
+  const outer = readDerLength(certDer, 1); // 外側SEQの長さは index1 から
+  const contentStart = 1 + outer.headerLen;
+  const childLen = readDerLength(certDer, contentStart + 1); // tbs の長さ
+  const childTotal = 1 + childLen.headerLen + childLen.len;
+  return certDer.substr(contentStart, childTotal);
+}
+
 // ---------------------------------------------------------------------------
 // 入力 → DER バイト列
 // ---------------------------------------------------------------------------
@@ -425,7 +450,9 @@ export function parseCertificateDer(der: string): ParsedCertificate {
       notAfter: parseTime(validitySeq[1]),
     };
     const subject = parseDistinguishedName(tbsChildren[offset + 4]);
-    const publicKey = parsePublicKey(tbsChildren[offset + 5]);
+    const spkiNode = tbsChildren[offset + 5];
+    const publicKey = parsePublicKey(spkiNode);
+    const rawSpki = forge.asn1.toDer(spkiNode).getBytes();
 
     // 拡張: [3] EXPLICIT（存在すれば）
     const extensions: CertExtension[] = [];
@@ -445,7 +472,8 @@ export function parseCertificateDer(der: string): ParsedCertificate {
       name: signatureAlgorithmName(sigAlgOid),
     };
     const sigBitString = kids(root)[2];
-    const signatureValue = hexColon(bytes(sigBitString).slice(1));
+    const rawSignature = bytes(sigBitString).slice(1);
+    const signatureValue = hexColon(rawSignature);
 
     // フィンガープリント（証明書全体の SHA-256）
     const md = forge.md.sha256.create();
@@ -464,6 +492,9 @@ export function parseCertificateDer(der: string): ParsedCertificate {
       signatureValue,
       fingerprintSha256,
       isSelfSigned: sameName(subject, issuer),
+      rawTbs: extractTbsDer(der),
+      rawSignature,
+      rawSpki,
     };
   } catch (e) {
     if (e instanceof CertificateParseError) throw e;
