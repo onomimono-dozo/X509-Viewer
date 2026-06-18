@@ -27,6 +27,11 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Setup Pages
+        # Pages を（可能なら）自動で有効化し、ビルド設定を取得する
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - run: npm ci
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
