@@ -15,6 +15,7 @@ interface CaptureRecord {
   pem?: string;
   origin?: string;
   capturedAt?: number;
+  method?: string;
   error?: string;
 }
 
@@ -31,6 +32,7 @@ export function ExtensionApp() {
   const [error, setError] = useState<string | undefined>();
   const [targetDomain, setTargetDomain] = useState('');
   const [capturedOrigin, setCapturedOrigin] = useState<string | undefined>();
+  const [captureMethod, setCaptureMethod] = useState<string | undefined>();
 
   useEffect(() => {
     if (!chain) return;
@@ -78,6 +80,7 @@ export function ExtensionApp() {
         setError(cap.error);
       } else if (cap.pem) {
         setCapturedOrigin(cap.origin);
+        setCaptureMethod(cap.method);
         handleParse(cap.pem, cap.origin);
       }
       // 消費後はプライバシーのため削除
@@ -106,6 +109,11 @@ export function ExtensionApp() {
           <p className="app-multi-note">
             🔎 <strong>{capturedOrigin}</strong>{' '}
             から取得した証明書を表示しています（ブラウザが実際に受け取ったもの）。
+            {captureMethod && (
+              <span style={{ opacity: 0.7, marginLeft: '0.6rem' }}>
+                取得方式: {captureMethod}
+              </span>
+            )}
           </p>
         )}
 
