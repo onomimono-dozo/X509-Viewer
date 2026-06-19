@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "サーバ証明書ビューア (capture)",
+  "version": "0.1.0",
+  "description": "表示中サイトのTLSサーバ証明書を捕捉し、日本語＋原語で可視化する学習ツール。",
+  "permissions": ["debugger", "storage", "activeTab"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "この証明書を表示"
+  }
+}

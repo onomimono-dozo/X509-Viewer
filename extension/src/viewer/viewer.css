@@ -1,0 +1,4 @@
+/* 拡張ビューア用の最小限の調整。ベースのスタイルは @app/styles/index.css を流用 */
+body {
+  min-width: 360px;
+}

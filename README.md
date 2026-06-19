@@ -59,6 +59,19 @@ src/
   styles/       スタイル
 ```
 
+## ブラウザ拡張（Chrome/Edge）
+
+`extension/` に、表示中サイトの証明書をワンクリックで捕捉して可視化する
+Manifest V3 拡張（捕捉MVP）があります。本体のパーサ・コンポーネントを再利用しています。
+
+```bash
+npm run build:ext   # extension/dist/ にビルド
+```
+
+`chrome://extensions`（または `edge://extensions`）→ デベロッパーモード →
+「パッケージ化されていない拡張機能を読み込む」で `extension/dist` を選択。
+詳細は [`extension/README.md`](extension/README.md) を参照。
+
 ## デプロイ
 
 `main` ブランチへ push すると GitHub Actions（`.github/workflows/deploy.yml`）が
