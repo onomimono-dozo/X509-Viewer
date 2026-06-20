@@ -39,6 +39,14 @@ export interface PublicKeyInfo {
   curve?: string;
   /** 人間向けの要約（例: "RSA 2048bit" / "EC P-256"） */
   summary: string;
+  /** RSA: 係数 modulus（コロン区切り16進） */
+  rsaModulusHex?: string;
+  /** RSA: 公開指数 exponent（例: "65537 (0x10001)"） */
+  rsaExponent?: string;
+  /** EC: 公開鍵の点 04‖X‖Y（コロン区切り16進） */
+  ecPointHex?: string;
+  /** 公開鍵のビット列そのもの（任意アルゴリズム共通、コロン区切り16進） */
+  rawKeyHex?: string;
 }
 
 /** 拡張のレンダリング種別 */

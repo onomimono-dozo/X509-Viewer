@@ -9,6 +9,7 @@ import type { NodeVerification } from '../../lib/verifyChain';
 import { FieldRow } from '../FieldRow/FieldRow';
 import { Seal } from '../Seal/Seal';
 import { VerificationBadge } from '../VerificationBadge/VerificationBadge';
+import { CertificateTree } from '../CertificateTree/CertificateTree';
 import './CertificateDetail.css';
 
 interface CertificateDetailProps {
@@ -176,6 +177,13 @@ export function CertificateDetail({
         </section>
       )}
 
+      <details className="tree-details" open>
+        <summary className="tree-details__summary">
+          🌳 証明書の構造（木構造）と「何が署名されているか」
+        </summary>
+        <CertificateTree cert={cert} />
+      </details>
+
       <Section title="基本情報">
         <FieldRow meta={FIELD.subject}>
           <DnView dn={cert.subject} />
@@ -320,8 +328,35 @@ export function CertificateDetail({
 
       <Section title="技術仕様・押印">
         <FieldRow meta={FIELD.publicKey}>
-          {cert.publicKey.summary}
-          <code className="orig-tag">{cert.publicKey.algorithmName}</code>
+          <div>
+            {cert.publicKey.summary}
+            <code className="orig-tag">{cert.publicKey.algorithmName}</code>
+          </div>
+          {cert.publicKey.rsaModulusHex && (
+            <div className="key-detail">
+              <div className="key-detail__label">
+                係数 <code className="orig-tag">modulus</code>
+              </div>
+              <div className="sig-value mono">{cert.publicKey.rsaModulusHex}</div>
+              <div className="key-detail__label">
+                公開指数 <code className="orig-tag">exponent</code>
+              </div>
+              <div className="mono">{cert.publicKey.rsaExponent}</div>
+            </div>
+          )}
+          {cert.publicKey.ecPointHex && (
+            <div className="key-detail">
+              <div className="key-detail__label">
+                公開鍵の点 <code className="orig-tag">04‖X‖Y</code>
+              </div>
+              <div className="sig-value mono">{cert.publicKey.ecPointHex}</div>
+            </div>
+          )}
+          <p className="inline-note">
+            これが「CAに証明されるサーバの公開鍵」そのものです。対になる秘密鍵は
+            サーバだけが持ち、証明書には現れません。CAの署名はこの公開鍵“だけ”ではなく、
+            上の木構造の「本体(tbsCertificate)」全体に対して行われます。
+          </p>
         </FieldRow>
         <FieldRow meta={FIELD.signatureAlgorithm}>
           {cert.signatureAlgorithm.name}

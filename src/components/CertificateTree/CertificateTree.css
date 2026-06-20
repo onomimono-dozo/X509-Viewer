@@ -1,0 +1,121 @@
+.ctree {
+  font-size: 0.9rem;
+}
+
+.ctree__legend {
+  margin: 0 0 0.9rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+}
+
+.ctree__root,
+.ctree__children {
+  list-style: none;
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.ctree__children {
+  border-left: 1px solid var(--color-border);
+  margin-left: 0.35rem;
+}
+
+.ctree__item {
+  padding: 0.12rem 0;
+}
+
+.ctree__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.ctree__icon {
+  font-size: 0.85rem;
+}
+
+.ctree__ja {
+  font-weight: 600;
+}
+
+.ctree__en {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+}
+
+.ctree__value {
+  color: var(--color-text);
+}
+
+.ctree__dn {
+  word-break: break-all;
+}
+
+.ctree__mono {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.76rem;
+  word-break: break-all;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.05rem 0.35rem;
+}
+
+.ctree__critical {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #fff;
+  background: #dc2626;
+  border-radius: 4px;
+  padding: 0.05rem 0.35rem;
+}
+
+/* 署名対象の本体（tbsCertificate）を強調する枠 */
+.ctree__signed {
+  border: 1.5px solid var(--color-accent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-accent) 6%, transparent);
+  padding: 0.5rem 0.6rem;
+  margin: 0.2rem 0;
+}
+
+.ctree__signed-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  font-size: 0.86rem;
+  margin-bottom: 0.3rem;
+}
+
+.ctree__signed-note {
+  font-weight: 600;
+  font-size: 0.74rem;
+  color: var(--color-accent);
+}
+
+.ctree__children--signed {
+  border-left-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+}
+
+/* 署名値の下に出す解説 */
+.ctree__callout {
+  list-style: none;
+  margin: 0.3rem 0 0.2rem;
+  padding: 0.5rem 0.65rem;
+  background: color-mix(in srgb, var(--color-seal) 8%, transparent);
+  border-left: 3px solid var(--color-seal);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: var(--color-text);
+}

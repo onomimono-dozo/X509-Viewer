@@ -80,6 +80,13 @@ function integerToNumber(intBytes: string): number {
   return hex ? parseInt(hex, 16) : 0;
 }
 
+/** 公開指数(exponent)を "65537 (0x10001)" の形に整える */
+function formatExponent(expBytes: string): string {
+  const hex = forge.util.bytesToHex(expBytes).replace(/^0+/, '') || '0';
+  const dec = parseInt(hex, 16);
+  return Number.isSafeInteger(dec) ? `${dec} (0x${hex})` : `0x${hex}`;
+}
+
 /** DER の長さフィールドを読む（pos は長さの先頭バイト位置） */
 function readDerLength(der: string, pos: number): { len: number; headerLen: number } {
   const b = der.charCodeAt(pos);
@@ -193,24 +200,30 @@ function parsePublicKey(spki: Asn1): PublicKeyInfo {
   const algId = kids(spki)[0];
   const algOid = asn1.derToOid(bytes(kids(algId)[0]));
   const algorithmName = publicKeyAlgorithmName(algOid);
+  // BIT STRING の中身（先頭の未使用ビット数オクテットを除く）= 公開鍵本体
+  const bitString = kids(spki)[1];
+  const keyBytes = bytes(bitString).slice(1);
+  const rawKeyHex = hexColon(keyBytes);
 
   if (algOid === '1.2.840.113549.1.1.1') {
-    // RSA: BIT STRING 内の RSAPublicKey SEQUENCE から modulus を読む
-    const bitString = kids(spki)[1];
-    const content = bytes(bitString).slice(1); // 先頭の未使用ビット数オクテットを除く
-    const rsaKey = fromDer(content);
+    // RSA: RSAPublicKey SEQUENCE { modulus, publicExponent }
+    const rsaKey = fromDer(keyBytes);
     const modulus = bytes(kids(rsaKey)[0]);
+    const exponent = bytes(kids(rsaKey)[1]);
     const keySizeBits = integerBitLength(modulus);
     return {
       algorithmOid: algOid,
       algorithmName: 'RSA',
       keySizeBits,
       summary: `RSA ${keySizeBits}bit`,
+      rsaModulusHex: hexColon(modulus),
+      rsaExponent: formatExponent(exponent),
+      rawKeyHex,
     };
   }
 
   if (algOid === '1.2.840.10045.2.1') {
-    // EC: AlgorithmIdentifier の2番目が名前付き曲線 OID
+    // EC: AlgorithmIdentifier の2番目が名前付き曲線 OID、鍵本体は点 04‖X‖Y
     const params = kids(algId)[1];
     const curveOid = asn1.derToOid(bytes(params));
     const curve = ecCurveName(curveOid);
@@ -219,6 +232,8 @@ function parsePublicKey(spki: Asn1): PublicKeyInfo {
       algorithmName: 'EC',
       curve,
       summary: `EC ${curve}`,
+      ecPointHex: hexColon(keyBytes),
+      rawKeyHex,
     };
   }
 
@@ -227,6 +242,7 @@ function parsePublicKey(spki: Asn1): PublicKeyInfo {
     algorithmOid: algOid,
     algorithmName,
     summary: algorithmName,
+    rawKeyHex,
   };
 }
 
